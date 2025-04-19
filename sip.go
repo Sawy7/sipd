@@ -103,8 +103,7 @@ func (m SIP) AddrFor(key, addr string) {
 }
 
 func (m SIP) ValueFrom(key, value string) string {
-	s := strings.Replace(m[key], `"`, ``, -1)
-	return strings.TrimPrefix(regexp.MustCompile(value+`=[^ ,;>]*`).FindString(s), value+`=`)
+	return regexp.MustCompile(value + `="(.*?)"`).FindStringSubmatch(m[key])[1]
 }
 
 func (m SIP) Reply(addr *net.UDPAddr) {

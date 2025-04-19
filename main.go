@@ -10,12 +10,13 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"math/rand"
 	"net"
 	"os"
 	"regexp"
 	"strings"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
@@ -143,6 +144,8 @@ func main() {
 			if m["Authorization"] == "" {
 				m["Request"] = "SIP/2.0 401 Unauthorized"
 				m["WWW-Authenticate"] = fmt.Sprintf(`Digest algorithm=MD5, realm="%s", nonce="%s"`, realm, m.RandHexString(4))
+				// m["To"] += ";tag=" + m.RandHexString(5)
+				// m["Allow"] = "REGISTER, INVITE, ACK, CANCEL, OPTIONS, BYE, INFO, PRACK, REFER, NOTIFY"
 			} else {
 				var name, secret, acl string
 				db.QueryRow("SELECT name, secret, acl FROM register WHERE name = $1", m.ValueFrom("Authorization", "username")).Scan(&name, &secret, &acl)
