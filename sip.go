@@ -103,7 +103,15 @@ func (m SIP) AddrFor(key, addr string) {
 }
 
 func (m SIP) ValueFrom(key, value string) string {
-	return regexp.MustCompile(value + `="(.*?)"`).FindStringSubmatch(m[key])[1]
+	matches := regexp.MustCompile(value + `="?([^ ,>"]*)`).FindStringSubmatch(m[key])
+	// fmt.Println("key", key, "value", value)
+	// fmt.Println("m[key]", m[key])
+	// fmt.Println("vfrom\t", matches)
+	// fmt.Println()
+	if len(matches) > 1 {
+		return matches[1]
+	}
+	return ""
 }
 
 func (m SIP) Reply(addr *net.UDPAddr) {
@@ -113,6 +121,10 @@ func (m SIP) Reply(addr *net.UDPAddr) {
 	delete(m, "Content")
 	delete(m, "Content-Type")
 	m["Content-Length"] = "0"
+
+	if strings.Contains(strings.ToLower(m["User-Agent"]), "cisco") {
+		addr.Port = 5060 // TODO: make it configurable
+	}
 
 	pack := []byte(m.String())
 	conn.WriteToUDP(pack, addr)

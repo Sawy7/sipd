@@ -135,9 +135,9 @@ func main() {
 		m := make(SIP) // recreate map SIP
 		m.Parse(string(buf[:n]))
 
-		if m["User-Agent"] != "" {
-			m["User-Agent"] = appname
-		}
+		// if m["User-Agent"] != "" {
+		// 	m["User-Agent"] = appname
+		// }
 
 		switch m.MethodFrom("Request") {
 		case "REGISTER":
